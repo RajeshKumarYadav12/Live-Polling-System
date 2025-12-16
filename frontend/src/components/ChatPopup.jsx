@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
 import socketService from "../services/socket";
 
@@ -8,53 +8,76 @@ function ChatPopup({ isOpen, onClose, userRole }) {
   const [newMessage, setNewMessage] = useState("");
   const [participants, setParticipants] = useState([]);
   const messagesEndRef = useRef(null);
+  const listenersSetupRef = useRef(false);
   const { studentName } = useSelector((state) => state.poll);
 
   const userName = userRole === "teacher" ? "Teacher" : studentName;
 
+  // Define handlers using useCallback to maintain stable references
+  const handleChatMessage = useCallback((data) => {
+    console.log(`[${userRole}] Received chat message:`, data);
+    setMessages((prev) => {
+      // Prevent duplicate messages by checking if message already exists
+      const isDuplicate = prev.some(
+        (msg) =>
+          msg.sender === data.sender &&
+          msg.message === data.message &&
+          Math.abs(new Date(msg.timestamp) - new Date(data.timestamp)) < 1000
+      );
+      if (isDuplicate) {
+        console.log(`[${userRole}] Duplicate message detected, ignoring`);
+        return prev;
+      }
+      return [...prev, data];
+    });
+  }, [userRole]);
+
+  const handleParticipantsUpdate = useCallback((data) => {
+    console.log(`[${userRole}] Participants updated:`, data);
+    setParticipants(data.participants);
+  }, [userRole]);
+
   useEffect(() => {
-    let timeoutId;
-    let listenersAttached = false;
+    // Only set up listeners once
+    if (listenersSetupRef.current) {
+      return;
+    }
 
-    const handleChatMessage = (data) => {
-      console.log("Received chat message:", data);
-      setMessages((prev) => [...prev, data]);
-    };
-
-    const handleParticipantsUpdate = (data) => {
-      console.log("Participants updated:", data);
-      setParticipants(data.participants);
-    };
-
+    // Ensure socket is connected before setting up listeners
     const setupListeners = () => {
-      if (!socketService.socket) {
-        console.log("Socket not ready, retrying in 100ms...");
-        timeoutId = setTimeout(setupListeners, 100);
+      const socket = socketService.socket;
+
+      if (!socket) {
+        console.log(`[${userRole}] Socket not available yet, waiting...`);
+        setTimeout(setupListeners, 200);
         return;
       }
 
-      if (!listenersAttached) {
-        socketService.socket.on("chatMessage", handleChatMessage);
-        socketService.socket.on("participantsUpdate", handleParticipantsUpdate);
-        listenersAttached = true;
-        console.log("Chat listeners set up for:", userRole, userName);
-      }
+      // Remove ALL existing listeners for these events to prevent duplicates
+      socket.removeAllListeners("chatMessage");
+      socket.removeAllListeners("participantsUpdate");
+
+      // Add listeners
+      socket.on("chatMessage", handleChatMessage);
+      socket.on("participantsUpdate", handleParticipantsUpdate);
+
+      listenersSetupRef.current = true;
+      console.log(
+        `[${userRole}] Chat listeners attached (Socket ID: ${socket.id})`
+      );
     };
 
     setupListeners();
 
     return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-      if (socketService.socket && listenersAttached) {
-        socketService.socket.off("chatMessage", handleChatMessage);
-        socketService.socket.off(
-          "participantsUpdate",
-          handleParticipantsUpdate
-        );
-        console.log("Chat listeners cleaned up");
+      const socket = socketService.socket;
+      if (socket) {
+        socket.off("chatMessage", handleChatMessage);
+        socket.off("participantsUpdate", handleParticipantsUpdate);
+        listenersSetupRef.current = false;
       }
     };
-  }, []);
+  }, [handleChatMessage, handleParticipantsUpdate, userRole]);
 
   // Request participants when popup opens
   useEffect(() => {
@@ -81,7 +104,12 @@ function ChatPopup({ isOpen, onClose, userRole }) {
         timestamp: new Date(),
       };
 
-      console.log("Sending message:", messageData);
+      console.log(`[${userRole}] Sending message:`, messageData);
+      console.log(
+        `[${userRole}] Socket connected:`,
+        socketService.socket.connected
+      );
+      console.log(`[${userRole}] Socket ID:`, socketService.socket.id);
 
       // Send to server to broadcast to everyone
       socketService.socket.emit("sendChatMessage", messageData);

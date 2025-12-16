@@ -4,7 +4,6 @@ import { setStudentName } from "../features/poll/pollSlice";
 import { toast } from "react-toastify";
 import socketService from "../services/socket";
 
-
 function StudentJoin({ onJoin }) {
   const dispatch = useDispatch();
   const [name, setName] = useState("");
