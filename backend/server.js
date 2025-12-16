@@ -47,12 +47,17 @@ app.get("/api/health", (req, res) => {
 // Initialize Socket.io handlers
 initializeSocket(io);
 
-// Start server
-const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📡 Socket.io ready for connections`);
-});
+// Start server only in development (not on Vercel)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  httpServer.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📡 Socket.io ready for connections`);
+  });
+}
 
 // Export io instance for use in controllers
 export { io };
+
+// Export app as default for Vercel
+export default httpServer;
