@@ -120,7 +120,8 @@ function Teacher() {
   const loadPollHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const response = await fetch("/api/polls/all");
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${API_URL}/api/polls/all`);
       const data = await response.json();
       if (data.success) {
         setPollHistoryState(data.data);
@@ -128,6 +129,7 @@ function Teacher() {
       }
     } catch (error) {
       console.error("Error loading poll history:", error);
+      toast.error("Failed to load poll history");
     } finally {
       setIsLoadingHistory(false);
     }
