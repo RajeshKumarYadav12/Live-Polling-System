@@ -13,7 +13,6 @@ import { toast } from "react-toastify";
 import socketService from "../services/socket";
 import TeacherDashboard from "../components/TeacherDashboard";
 import Timer from "../components/Timer";
-import ResultChart from "../components/ResultChart";
 import ChatPopup from "../components/ChatPopup";
 import ChatButton from "../components/ChatButton";
 import PollHistory from "../components/PollHistory";
@@ -175,7 +174,7 @@ function Teacher() {
           <TeacherDashboard />
         </div>
 
-        {/* Right Column - Active Poll & Results */}
+        {/* Right Column - Active Poll */}
         <div>
           {currentPoll && currentPoll.status === "active" ? (
             <>
@@ -215,18 +214,12 @@ function Teacher() {
                   onTimeUp={handleTimeUp}
                 />
               </div>
-
-              {/* Live Results */}
-              <ResultChart
-                results={currentPoll.results}
-                totalResponses={currentPoll.totalResponses}
-              />
             </>
           ) : (
             <div className="card">
               <div className="empty-state">
                 <h3>No Active Poll</h3>
-                <p>Create a poll to see live results here</p>
+                <p>Create a poll to get started</p>
               </div>
             </div>
           )}
