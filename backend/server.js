@@ -14,25 +14,15 @@ dotenv.config();
 const app = express();
 const httpServer = createServer(app);
 
-// Connect to MongoDB only once and cache the connection
-let cachedDb = null;
+// Connect to MongoDB
 async function connectDB() {
-  if (cachedDb) {
-    return cachedDb;
-  }
-
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
-    });
-    cachedDb = conn;
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     return conn;
   } catch (error) {
     console.error(`❌ Error connecting to MongoDB: ${error.message}`);
-    throw error;
+    process.exit(1);
   }
 }
 
@@ -102,18 +92,18 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-// Initialize Socket.io handlers (only in development)
-if (process.env.NODE_ENV !== "production") {
-  initializeSocket(io);
-  const PORT = process.env.PORT || 5000;
-  httpServer.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📡 Socket.io ready for connections`);
-  });
-}
+// Connect to MongoDB on startup
+connectDB();
+
+// Initialize Socket.io handlers
+initializeSocket(io);
+
+// Start server
+const PORT = process.env.PORT || 5000;
+httpServer.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📡 Socket.io ready for connections`);
+});
 
 // Export io instance for use in controllers
 export { io };
-
-// Export Express app as default for Vercel (not httpServer)
-export default app;

@@ -1,17 +1,5 @@
 import Poll from "../models/Poll.js";
 import Response from "../models/Response.js";
-import mongoose from "mongoose";
-
-// Ensure MongoDB connection
-async function ensureConnection() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
-    });
-  }
-}
 
 /**
  * @desc    Create a new poll
@@ -20,9 +8,6 @@ async function ensureConnection() {
  */
 export const createPoll = async (req, res) => {
   try {
-    // Ensure DB connection
-    await ensureConnection();
-    
     const { question, options, duration } = req.body;
 
     // Validation
@@ -78,7 +63,6 @@ export const createPoll = async (req, res) => {
  */
 export const getActivePoll = async (req, res) => {
   try {
-    await ensureConnection();
     const poll = await Poll.findOne({ status: "active" });
 
     if (!poll) {
@@ -113,7 +97,6 @@ export const getActivePoll = async (req, res) => {
  */
 export const getPollById = async (req, res) => {
   try {
-    await ensureConnection();
     const poll = await Poll.findById(req.params.id);
 
     if (!poll) {
@@ -148,7 +131,6 @@ export const getPollById = async (req, res) => {
  */
 export const getAllPolls = async (req, res) => {
   try {
-    await ensureConnection();
     // Only get ended polls for history
     const polls = await Poll.find({ status: "ended" })
       .sort({ createdAt: -1 })
@@ -185,7 +167,6 @@ export const getAllPolls = async (req, res) => {
  */
 export const endPoll = async (req, res) => {
   try {
-    await ensureConnection();
     const poll = await Poll.findById(req.params.id);
 
     if (!poll) {
@@ -224,7 +205,6 @@ export const endPoll = async (req, res) => {
  */
 export const submitVote = async (req, res) => {
   try {
-    await ensureConnection();
     const { id } = req.params;
     const { optionIndex, studentName } = req.body;
 
@@ -295,7 +275,6 @@ export const submitVote = async (req, res) => {
 
 export const checkStudentVoted = async (req, res) => {
   try {
-    await ensureConnection();
     const { id, studentName } = req.params;
 
     const response = await Response.findOne({
