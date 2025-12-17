@@ -136,20 +136,10 @@ function Student() {
   }, [hasJoined, dispatch, currentPoll, studentName]);
 
   const handleJoin = (name) => {
-    const socket = socketService.connect();
-
-    // Wait for connection to be established
-    if (socket.connected) {
-      socketService.studentJoin(name);
-      socketService.getActivePoll();
-      setHasJoined(true);
-    } else {
-      socket.once("connect", () => {
-        socketService.studentJoin(name);
-        socketService.getActivePoll();
-        setHasJoined(true);
-      });
-    }
+    setHasJoined(true);
+    socketService.connect();
+    socketService.studentJoin(name);
+    socketService.getActivePoll();
   };
 
   const handleTimeUp = () => {

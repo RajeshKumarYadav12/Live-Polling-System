@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import socketService from "../services/socket";
 import TeacherDashboard from "../components/TeacherDashboard";
 import Timer from "../components/Timer";
+import ResultChart from "../components/ResultChart";
 import ChatPopup from "../components/ChatPopup";
 import ChatButton from "../components/ChatButton";
 import PollHistory from "../components/PollHistory";
@@ -119,7 +120,7 @@ function Teacher() {
   const loadPollHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "";
+      const API_URL = import.meta.env.VITE_API_URL || '';
       const response = await fetch(`${API_URL}/api/polls/all`);
       const data = await response.json();
       if (data.success) {
@@ -174,9 +175,9 @@ function Teacher() {
           <TeacherDashboard />
         </div>
 
-        {/* Right Column - Active Poll */}
+        {/* Right Column - Active Poll & Results */}
         <div>
-          {currentPoll && currentPoll.status === "active" ? (
+          {currentPoll && currentPoll.status === "active" && (
             <>
               {/* Active Poll Info */}
               <div className="card" style={{ marginBottom: "2rem" }}>
@@ -214,14 +215,13 @@ function Teacher() {
                   onTimeUp={handleTimeUp}
                 />
               </div>
+
+              {/* Live Results */}
+              <ResultChart
+                results={currentPoll.results}
+                totalResponses={currentPoll.totalResponses}
+              />
             </>
-          ) : (
-            <div className="card">
-              <div className="empty-state">
-                <h3>No Active Poll</h3>
-                <p>Create a poll to get started</p>
-              </div>
-            </div>
           )}
         </div>
       </div>
