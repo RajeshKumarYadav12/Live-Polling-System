@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -27,6 +27,12 @@ function Student() {
   const [hasJoined, setHasJoined] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isKicked, setIsKicked] = useState(false);
+  const currentPollRef = useRef(null);
+
+  // Update ref when currentPoll changes
+  useEffect(() => {
+    currentPollRef.current = currentPoll;
+  }, [currentPoll]);
 
   useEffect(() => {
     if (hasJoined) {
@@ -151,9 +157,10 @@ function Student() {
       
       if (data.success && data.data) {
         const poll = data.data;
+        const current = currentPollRef.current;
         
         // Only update results, don't reset timer if poll is already active
-        if (currentPoll && currentPoll.pollId === poll._id) {
+        if (current && current.pollId === poll._id) {
           dispatch(
             updatePollResults({
               pollId: poll._id,
