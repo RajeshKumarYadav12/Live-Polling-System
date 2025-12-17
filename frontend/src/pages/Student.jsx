@@ -151,18 +151,31 @@ function Student() {
       
       if (data.success && data.data) {
         const poll = data.data;
-        dispatch(
-          setCurrentPoll({
-            pollId: poll._id,
-            question: poll.question,
-            options: poll.options.map((opt) => opt.text),
-            duration: poll.duration,
-            timeRemaining: poll.duration,
-            results: poll.options.map((opt) => ({ text: opt.text, votes: opt.votes })),
-            totalResponses: poll.totalResponses || 0,
-            status: poll.status,
-          })
-        );
+        
+        // Only update results, don't reset timer if poll is already active
+        if (currentPoll && currentPoll.pollId === poll._id) {
+          dispatch(
+            updatePollResults({
+              pollId: poll._id,
+              results: poll.options.map((opt) => ({ text: opt.text, votes: opt.votes })),
+              totalResponses: poll.totalResponses || 0,
+            })
+          );
+        } else {
+          // New poll, set everything including timer
+          dispatch(
+            setCurrentPoll({
+              pollId: poll._id,
+              question: poll.question,
+              options: poll.options.map((opt) => opt.text),
+              duration: poll.duration,
+              timeRemaining: poll.duration,
+              results: poll.options.map((opt) => ({ text: opt.text, votes: opt.votes })),
+              totalResponses: poll.totalResponses || 0,
+              status: poll.status,
+            })
+          );
+        }
       } else {
         dispatch(clearCurrentPoll());
       }
