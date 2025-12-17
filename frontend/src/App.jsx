@@ -31,7 +31,7 @@ function HomePage() {
       <div className="home-container">
         <div className="logo-badge">
           <img
-            src="/src/assets/sparkle-icon.png"
+            src="/sparkle-icon.png"
             alt="sparkle"
             className="sparkle-icon"
           />

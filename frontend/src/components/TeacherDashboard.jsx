@@ -108,7 +108,7 @@ function TeacherDashboard() {
     <div className="teacher-card">
       {/* Logo Badge */}
       <div className="logo-badge-small">
-        <img src="/src/assets/sparkle-icon.png" alt="sparkle" className="sparkle-icon" />
+        <img src="/sparkle-icon.png" alt="sparkle" className="sparkle-icon" />
         <span>Intervue Poll</span>
       </div>
 

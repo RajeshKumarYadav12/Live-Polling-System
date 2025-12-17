@@ -209,7 +209,7 @@ function Student() {
       <div className="page-container">
         <div className="kicked-out-container">
           <div className="logo-badge-small">
-            <img src="/src/assets/sparkle-icon.png" alt="sparkle" className="sparkle-icon" />
+            <img src="/sparkle-icon.png" alt="sparkle" className="sparkle-icon" />
             <span>Intervue Poll</span>
           </div>
 
@@ -246,7 +246,7 @@ function Student() {
         <div className="student-waiting-container">
           {/* Logo Badge */}
           <div className="logo-badge-small">
-            <img src="/src/assets/sparkle-icon.png" alt="sparkle" className="sparkle-icon" />
+            <img src="/sparkle-icon.png" alt="sparkle" className="sparkle-icon" />
             <span>Intervue Poll</span>
           </div>
 
