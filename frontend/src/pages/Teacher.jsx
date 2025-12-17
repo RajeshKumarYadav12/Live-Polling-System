@@ -36,6 +36,9 @@ function Teacher() {
     // Fetch active poll via REST API
     fetchActivePoll();
 
+    // Poll for active poll updates every 3 seconds for live results
+    const pollInterval = setInterval(fetchActivePoll, 3000);
+
     // Check for active poll on load via Socket.io (fallback)
     socketService.getActivePoll();
 
@@ -116,6 +119,7 @@ function Teacher() {
     loadPollHistory();
 
     return () => {
+      clearInterval(pollInterval);
       socketService.removeAllListeners();
     };
   }, [dispatch]);

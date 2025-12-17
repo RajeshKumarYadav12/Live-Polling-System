@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedOption, setHasVoted } from "../features/poll/pollSlice";
+import { setSelectedOption, setHasVoted, decrementTimer } from "../features/poll/pollSlice";
 import { toast } from "react-toastify";
 import socketService from "../services/socket";
 
@@ -11,13 +11,24 @@ function PollQuestion({ poll }) {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Local timer countdown
+  useEffect(() => {
+    if (timeRemaining > 0 && !hasVoted) {
+      const timer = setInterval(() => {
+        dispatch(decrementTimer());
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [timeRemaining, hasVoted, dispatch]);
+
   const handleOptionSelect = (index) => {
     if (!hasVoted) {
       dispatch(setSelectedOption(index));
     }
   };
 
-  const handleSubmitVote = () => {
+  const handleSubmitVote = async () => {
     if (selectedOption === null) {
       toast.error("Please select an option");
       return;
@@ -30,16 +41,36 @@ function PollQuestion({ poll }) {
 
     setIsSubmitting(true);
 
-    // Submit vote via Socket.io
-    socketService.submitVote(poll.pollId, selectedOption, studentName);
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "";
+      
+      // Submit vote via REST API
+      const response = await fetch(`${API_URL}/api/polls/${poll.pollId}/vote`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          optionIndex: selectedOption,
+          studentName: studentName,
+        }),
+      });
 
-    // Mark as voted
-    dispatch(setHasVoted(true));
+      const data = await response.json();
 
-    setTimeout(() => {
+      if (data.success) {
+        // Mark as voted
+        dispatch(setHasVoted(true));
+        toast.success("Vote submitted successfully!");
+      } else {
+        toast.error(data.message || "Failed to submit vote");
+      }
+    } catch (error) {
+      console.error("Error submitting vote:", error);
+      toast.error("Failed to submit vote");
+    } finally {
       setIsSubmitting(false);
-      toast.success("Vote submitted successfully!");
-    }, 500);
+    }
   };
 
   if (!poll) {

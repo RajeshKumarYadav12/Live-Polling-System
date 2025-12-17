@@ -217,6 +217,82 @@ export const endPoll = async (req, res) => {
  * @route   GET /api/polls/:id/check-vote/:studentName
  * @access  Public
  */
+/**
+ * @desc    Submit a vote
+ * @route   POST /api/polls/:id/vote
+ * @access  Public (Student)
+ */
+export const submitVote = async (req, res) => {
+  try {
+    await ensureConnection();
+    const { id } = req.params;
+    const { optionIndex, studentName } = req.body;
+
+    // Validate
+    if (optionIndex === undefined || !studentName) {
+      return res.status(400).json({
+        success: false,
+        message: "Option index and student name are required",
+      });
+    }
+
+    // Check if poll exists and is active
+    const poll = await Poll.findById(id);
+    if (!poll || poll.status !== "active") {
+      return res.status(404).json({
+        success: false,
+        message: "Poll is not active",
+      });
+    }
+
+    // Check if student already voted
+    const existingResponse = await Response.findOne({
+      pollId: id,
+      studentName,
+    });
+    if (existingResponse) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already voted",
+      });
+    }
+
+    // Save response
+    const response = new Response({
+      pollId: id,
+      studentName,
+      optionIndex,
+      submittedAt: new Date(),
+    });
+    await response.save();
+
+    // Update poll vote count
+    poll.options[optionIndex].votes += 1;
+    await poll.save();
+
+    // Get total responses
+    const totalResponses = await Response.countDocuments({ pollId: id });
+
+    res.status(200).json({
+      success: true,
+      message: "Vote submitted successfully",
+      data: {
+        results: poll.options.map((opt) => ({
+          text: opt.text,
+          votes: opt.votes,
+        })),
+        totalResponses,
+      },
+    });
+  } catch (error) {
+    console.error("Error submitting vote:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 export const checkStudentVoted = async (req, res) => {
   try {
     await ensureConnection();
