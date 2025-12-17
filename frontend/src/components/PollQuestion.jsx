@@ -126,7 +126,7 @@ function PollQuestion({ poll }) {
         </div>
 
         <p className="wait-message">
-          Wait for the teacher to ask a new question..
+          <strong>Wait for the teacher to ask a new question..</strong>
         </p>
       </div>
     );
@@ -175,7 +175,7 @@ function PollQuestion({ poll }) {
         </button>
       ) : (
         <p className="wait-message">
-          Wait for the teacher to ask a new question..
+          <strong>Wait for the teacher to ask a new question..</strong>
         </p>
       )}
     </div>

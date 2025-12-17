@@ -30,7 +30,11 @@ function HomePage() {
     <div className="home-page">
       <div className="home-container">
         <div className="logo-badge">
-          <span className="sparkle-icon">✨</span>
+          <img
+            src="/src/assets/sparkle-icon.png"
+            alt="sparkle"
+            className="sparkle-icon"
+          />
           <span>Intervue Poll</span>
         </div>
 

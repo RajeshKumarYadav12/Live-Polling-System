@@ -14,12 +14,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: #6c63ff;
+  background: linear-gradient(135deg, rgba(117, 101, 217, 1), rgba(77, 10, 205, 1));
   color: white;
   padding: 0.4rem 1rem;
   border-radius: 50px;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 1rem;
 }
 
@@ -194,7 +194,7 @@
   display: block;
   margin-left: auto;
   padding: 1rem 3rem;
-  background: #6c63ff;
+  background: linear-gradient(135deg, rgba(143, 100, 225, 1), rgba(29, 104, 189, 1));
   color: white;
   border: none;
   border-radius: 50px;
@@ -203,13 +203,13 @@
   cursor: pointer;
   margin-top: 2rem;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(108, 99, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(143, 100, 225, 0.35);
 }
 
 .ask-question-btn:hover:not(:disabled) {
-  background: #5a52e6;
+  background: linear-gradient(135deg, rgba(123, 80, 205, 1), rgba(19, 84, 169, 1));
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(108, 99, 255, 0.45);
+  box-shadow: 0 6px 18px rgba(143, 100, 225, 0.45);
 }
 
 .ask-question-btn:disabled {
@@ -791,24 +791,24 @@
   font-size: 1.05rem;
   font-weight: 600;
   color: white;
-  background: #6c63ff;
+  background: linear-gradient(135deg, rgba(143, 100, 225, 1), rgba(29, 104, 189, 1));
   border: none;
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(108, 99, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(143, 100, 225, 0.35);
   display: block;
 }
 
 .continue-btn:hover {
-  background: #5a52e6;
+  background: linear-gradient(135deg, rgba(123, 80, 205, 1), rgba(19, 84, 169, 1));
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(108, 99, 255, 0.45);
+  box-shadow: 0 6px 18px rgba(143, 100, 225, 0.45);
 }
 
 .continue-btn:active {
   transform: translateY(0);
-  box-shadow: 0 3px 10px rgba(108, 99, 255, 0.35);
+  box-shadow: 0 3px 10px rgba(143, 100, 225, 0.35);
 }
 
 /* Student Waiting Screen */
@@ -948,7 +948,7 @@
   display: block;
   margin-left: auto;
   padding: 1rem 3.5rem;
-  background: #6c63ff;
+  background: linear-gradient(135deg, rgba(143, 100, 225, 1), rgba(29, 104, 189, 1));
   color: white;
   border: none;
   border-radius: 50px;
@@ -956,13 +956,13 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(108, 99, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(143, 100, 225, 0.35);
 }
 
 .poll-submit-btn:hover:not(:disabled) {
-  background: #5a52e6;
+  background: linear-gradient(135deg, rgba(123, 80, 205, 1), rgba(19, 84, 169, 1));
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(108, 99, 255, 0.45);
+  box-shadow: 0 6px 18px rgba(143, 100, 225, 0.45);
 }
 
 .poll-submit-btn:disabled {
@@ -1107,7 +1107,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #6c63ff;
+  background: linear-gradient(135deg, rgba(143, 100, 225, 1), rgba(29, 104, 189, 1));
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -1115,15 +1115,15 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(143, 100, 225, 0.3);
   transition: all 0.3s ease;
   z-index: 900;
 }
 
 .view-history-btn:hover {
-  background: #5a52e0;
+  background: linear-gradient(135deg, rgba(123, 80, 205, 1), rgba(19, 84, 169, 1));
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(108, 99, 255, 0.4);
+  box-shadow: 0 6px 16px rgba(143, 100, 225, 0.4);
 }
 
 .view-history-btn svg {
@@ -1318,7 +1318,7 @@
 }
 
 .continue-btn {
-  background: #6c63ff;
+  background: linear-gradient(135deg, rgba(143, 100, 225, 1), rgba(29, 104, 189, 1));
   color: white;
   border: none;
   padding: 1rem 3.5rem;
@@ -1327,13 +1327,13 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(108, 99, 255, 0.35);
+  box-shadow: 0 4px 16px rgba(143, 100, 225, 0.35);
 }
 
 .continue-btn:hover:not(:disabled) {
-  background: #5a52e0;
+  background: linear-gradient(135deg, rgba(123, 80, 205, 1), rgba(19, 84, 169, 1));
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(108, 99, 255, 0.45);
+  box-shadow: 0 6px 20px rgba(143, 100, 225, 0.45);
 }
 
 .continue-btn:disabled {

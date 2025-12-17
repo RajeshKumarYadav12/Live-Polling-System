@@ -49,7 +49,7 @@ function StudentJoin({ onJoin }) {
     <div className="student-join-container">
       {/* Logo Badge */}
       <div className="logo-badge-small">
-        <span className="sparkle-icon">✨</span>
+        <img src="/src/assets/sparkle-icon.png" alt="sparkle" className="sparkle-icon" />
         <span>Intervue Poll</span>
       </div>
 
