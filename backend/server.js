@@ -39,6 +39,21 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/api/polls", pollRoutes);
 
+// Root route
+app.get("/", (req, res) => {
+  res.json({ 
+    status: "OK", 
+    message: "Live Polling System Backend API",
+    endpoints: {
+      health: "/api/health",
+      polls: "/api/polls",
+      createPoll: "POST /api/polls/create",
+      activePoll: "GET /api/polls/active",
+      allPolls: "GET /api/polls/all"
+    }
+  });
+});
+
 // Health check route
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
