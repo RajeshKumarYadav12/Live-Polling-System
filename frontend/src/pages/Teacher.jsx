@@ -213,9 +213,25 @@ function Teacher() {
     }
   };
 
-  const handleTimeUp = () => {
-    // Poll will be ended automatically by the server
-    console.log("Time is up!");
+  const handleTimeUp = async () => {
+    // End poll when timer reaches 0
+    if (currentPoll && currentPoll.pollId) {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || "";
+        const response = await fetch(`${API_URL}/api/polls/${currentPoll.pollId}/end`, {
+          method: "POST",
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          toast.info("Time's up! Poll has ended.");
+          dispatch(clearCurrentPoll());
+          loadPollHistory();
+        }
+      } catch (error) {
+        console.error("Error auto-ending poll:", error);
+      }
+    }
   };
 
   return (

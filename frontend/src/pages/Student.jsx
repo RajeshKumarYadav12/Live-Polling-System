@@ -199,7 +199,8 @@ function Student() {
   };
 
   const handleTimeUp = () => {
-    console.log("Time is up!");
+    // Student just sees the poll end notification
+    toast.info("Time's up! Poll has ended.");
   };
 
   // Show kicked out page
