@@ -36,19 +36,20 @@ async function connectDB() {
   }
 }
 
-// Initialize Socket.io with CORS
+// Initialize Socket.io with CORS - Allow all origins
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
-// Middleware
+// Middleware - Allow all origins for Vercel deployment
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
@@ -100,11 +101,9 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-// Initialize Socket.io handlers
-initializeSocket(io);
-
-// Start server only in development (not on Vercel)
+// Initialize Socket.io handlers (only in development)
 if (process.env.NODE_ENV !== "production") {
+  initializeSocket(io);
   const PORT = process.env.PORT || 5000;
   httpServer.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
@@ -115,5 +114,5 @@ if (process.env.NODE_ENV !== "production") {
 // Export io instance for use in controllers
 export { io };
 
-// Export app as default for Vercel
-export default httpServer;
+// Export Express app as default for Vercel (not httpServer)
+export default app;
