@@ -20,7 +20,7 @@ async function connectDB() {
   if (cachedDb) {
     return cachedDb;
   }
-  
+
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
@@ -63,8 +63,8 @@ app.use("/api/polls", pollRoutes);
 app.get("/", async (req, res) => {
   try {
     await connectDB();
-    res.json({ 
-      status: "OK", 
+    res.json({
+      status: "OK",
       message: "Live Polling System Backend API",
       database: "Connected",
       endpoints: {
@@ -72,14 +72,14 @@ app.get("/", async (req, res) => {
         polls: "/api/polls",
         createPoll: "POST /api/polls/create",
         activePoll: "GET /api/polls/active",
-        allPolls: "GET /api/polls/all"
-      }
+        allPolls: "GET /api/polls/all",
+      },
     });
   } catch (error) {
-    res.status(500).json({ 
-      status: "Error", 
+    res.status(500).json({
+      status: "Error",
       message: "Failed to connect to database",
-      error: error.message 
+      error: error.message,
     });
   }
 });
@@ -88,15 +88,16 @@ app.get("/", async (req, res) => {
 app.get("/api/health", async (req, res) => {
   try {
     await connectDB();
-    res.json({ 
-      status: "OK", 
+    res.json({
+      status: "OK",
       message: "Server is running",
-      database: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected"
+      database:
+        mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
     });
   } catch (error) {
-    res.status(500).json({ 
-      status: "Error", 
-      message: error.message 
+    res.status(500).json({
+      status: "Error",
+      message: error.message,
     });
   }
 });

@@ -41,7 +41,7 @@ function TeacherDashboard() {
     setOptions(newOptions);
   };
 
-  const handleCreatePoll = (e) => {
+  const handleCreatePoll = async (e) => {
     e.preventDefault();
 
     // Validation
@@ -61,22 +61,47 @@ function TeacherDashboard() {
       return;
     }
 
-    // Create poll via Socket.io
+    // Create poll via REST API
     setIsCreating(true);
-    const optionTexts = validOptions.map((opt) => opt.text);
-    socketService.createPoll(question, optionTexts, duration);
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "";
+      const optionTexts = validOptions.map((opt) => opt.text);
+      
+      const response = await fetch(`${API_URL}/api/polls/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question,
+          options: optionTexts,
+          duration,
+        }),
+      });
 
-    // Reset form
-    setTimeout(() => {
-      setQuestion("");
-      setOptions([
-        { text: "", isCorrect: false },
-        { text: "", isCorrect: false },
-      ]);
-      setDuration(60);
+      const data = await response.json();
+
+      if (data.success) {
+        // Also emit via Socket.io for real-time updates (if connected)
+        socketService.createPoll(question, optionTexts, duration);
+        
+        // Reset form
+        setQuestion("");
+        setOptions([
+          { text: "", isCorrect: false },
+          { text: "", isCorrect: false },
+        ]);
+        setDuration(60);
+        toast.success("Poll created successfully!");
+      } else {
+        toast.error(data.message || "Failed to create poll");
+      }
+    } catch (error) {
+      console.error("Error creating poll:", error);
+      toast.error("Failed to create poll");
+    } finally {
       setIsCreating(false);
-      toast.success("Poll created successfully!");
-    }, 500);
+    }
   };
 
   return (

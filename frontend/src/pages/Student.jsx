@@ -101,8 +101,9 @@ function Student() {
 
         // Check if student has already voted
         try {
+          const API_URL = import.meta.env.VITE_API_URL || "";
           const response = await fetch(
-            `/api/polls/${data.pollId}/check-vote/${studentName}`
+            `${API_URL}/api/polls/${data.pollId}/check-vote/${studentName}`
           );
           const result = await response.json();
           if (result.success && result.hasVoted) {
