@@ -33,7 +33,10 @@ function Teacher() {
     // Teacher joins
     socketService.teacherJoin();
 
-    // Check for active poll on load
+    // Fetch active poll via REST API
+    fetchActivePoll();
+
+    // Check for active poll on load via Socket.io (fallback)
     socketService.getActivePoll();
 
     // Listen for poll created
@@ -117,6 +120,34 @@ function Teacher() {
     };
   }, [dispatch]);
 
+  const fetchActivePoll = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "";
+      const response = await fetch(`${API_URL}/api/polls/active`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        const poll = data.data;
+        dispatch(
+          setCurrentPoll({
+            pollId: poll._id,
+            question: poll.question,
+            options: poll.options.map((opt) => opt.text),
+            duration: poll.duration,
+            timeRemaining: poll.duration,
+            results: poll.options.map((opt) => ({ text: opt.text, votes: opt.votes })),
+            totalResponses: poll.totalResponses || 0,
+            status: poll.status,
+          })
+        );
+      } else {
+        dispatch(clearCurrentPoll());
+      }
+    } catch (error) {
+      console.error("Error fetching active poll:", error);
+    }
+  };
+
   const loadPollHistory = async () => {
     setIsLoadingHistory(true);
     try {
@@ -135,9 +166,26 @@ function Teacher() {
     }
   };
 
-  const handleEndPoll = () => {
+  const handleEndPoll = async () => {
     if (currentPoll && currentPoll.pollId) {
-      socketService.endPoll(currentPoll.pollId);
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || "";
+        const response = await fetch(`${API_URL}/api/polls/${currentPoll.pollId}/end`, {
+          method: "POST",
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          toast.success("Poll ended successfully!");
+          dispatch(clearCurrentPoll());
+          loadPollHistory();
+        } else {
+          toast.error("Failed to end poll");
+        }
+      } catch (error) {
+        console.error("Error ending poll:", error);
+        toast.error("Failed to end poll");
+      }
     }
   };
 

@@ -82,9 +82,6 @@ function TeacherDashboard() {
       const data = await response.json();
 
       if (data.success) {
-        // Also emit via Socket.io for real-time updates (if connected)
-        socketService.createPoll(question, optionTexts, duration);
-        
         // Reset form
         setQuestion("");
         setOptions([
@@ -93,6 +90,9 @@ function TeacherDashboard() {
         ]);
         setDuration(60);
         toast.success("Poll created successfully!");
+        
+        // Reload page to fetch new poll
+        window.location.reload();
       } else {
         toast.error(data.message || "Failed to create poll");
       }

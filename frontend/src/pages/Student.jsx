@@ -30,6 +30,12 @@ function Student() {
 
   useEffect(() => {
     if (hasJoined) {
+      // Fetch active poll via REST API
+      fetchActivePoll();
+      
+      // Poll for updates every 5 seconds
+      const pollInterval = setInterval(fetchActivePoll, 5000);
+      
       // Listen for poll created
       socketService.onPollCreated((data) => {
         console.log("New poll created:", data);
@@ -131,10 +137,39 @@ function Student() {
       });
 
       return () => {
+        clearInterval(pollInterval);
         socketService.removeAllListeners();
       };
     }
   }, [hasJoined, dispatch, currentPoll, studentName]);
+
+  const fetchActivePoll = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "";
+      const response = await fetch(`${API_URL}/api/polls/active`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        const poll = data.data;
+        dispatch(
+          setCurrentPoll({
+            pollId: poll._id,
+            question: poll.question,
+            options: poll.options.map((opt) => opt.text),
+            duration: poll.duration,
+            timeRemaining: poll.duration,
+            results: poll.options.map((opt) => ({ text: opt.text, votes: opt.votes })),
+            totalResponses: poll.totalResponses || 0,
+            status: poll.status,
+          })
+        );
+      } else {
+        dispatch(clearCurrentPoll());
+      }
+    } catch (error) {
+      console.error("Error fetching active poll:", error);
+    }
+  };
 
   const handleJoin = (name) => {
     setHasJoined(true);
