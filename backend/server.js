@@ -56,7 +56,9 @@ async function connectDB(retries = 5, delayMs = 3000) {
 const CORS_ORIGIN = process.env.FRONTEND_URL || "*";
 
 // Initialize Socket.io with CORS
+// serveClient: false — client is installed via npm, no need for the server to serve it
 const io = new Server(httpServer, {
+  serveClient: false,
   cors: {
     origin: CORS_ORIGIN,
     methods: ["GET", "POST"],
@@ -73,22 +75,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware: return 503 for DB-dependent routes when MongoDB is not connected
-app.use(["/api/polls", "/api/sessions"], (req, res, next) => {
-  if (mongoose.connection.readyState !== 1) {
-    return res.status(503).json({
-      success: false,
-      message: "Database is temporarily unavailable. Please try again shortly.",
-    });
-  }
-  next();
-});
-
-// Routes
-app.use("/api/polls", pollRoutes);
-app.use("/api/sessions", sessionRoutes);
-
-// Root route
+// Root route — health / discovery (defined BEFORE API routes so nothing can swallow it)
 app.get("/", (req, res) => {
   res.json({
     status: "OK",
@@ -117,6 +104,21 @@ app.get("/api/health", (req, res) => {
     database: dbStatus,
   });
 });
+
+// Middleware: return 503 for DB-dependent routes when MongoDB is not connected
+app.use(["/api/polls", "/api/sessions"], (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      message: "Database is temporarily unavailable. Please try again shortly.",
+    });
+  }
+  next();
+});
+
+// Routes
+app.use("/api/polls", pollRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 // Connect to MongoDB on startup, then recover any live timers
 (async () => {
