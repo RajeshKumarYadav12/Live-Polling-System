@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: live-polling-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false # set in Render dashboard → Environment → MONGODB_URI
+      - key: FRONTEND_URL
+        sync: false # set in Render dashboard → Environment → e.g. https://your-app.vercel.app
