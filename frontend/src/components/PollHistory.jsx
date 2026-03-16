@@ -1,6 +1,6 @@
 import React from "react";
 
-function PollHistory({ polls, isOpen, onClose }) {
+function PollHistory({ polls, isOpen, onClose, isLoading = false }) {
   if (!isOpen) return null;
 
   return (
@@ -16,11 +16,18 @@ function PollHistory({ polls, isOpen, onClose }) {
         </div>
 
         <div className="poll-history-content">
-          {polls.length === 0 ? (
+          {isLoading && (
+            <div className="empty-state">
+              <div className="waiting-spinner"></div>
+              <p>Loading poll history...</p>
+            </div>
+          )}
+          {!isLoading && polls.length === 0 ? (
             <div className="empty-state">
               <p>No poll history available</p>
             </div>
           ) : (
+            !isLoading &&
             polls.map((poll, pollIndex) => (
               <div key={poll._id} className="history-poll-item">
                 <h3 className="history-poll-question-title">
@@ -35,7 +42,7 @@ function PollHistory({ polls, isOpen, onClose }) {
                   {poll.options.map((option, index) => {
                     const totalVotes = poll.options.reduce(
                       (sum, opt) => sum + opt.votes,
-                      0
+                      0,
                     );
                     const percentage =
                       totalVotes > 0

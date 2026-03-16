@@ -18,12 +18,15 @@ class SocketService {
   connect() {
     if (!this.socket) {
       this.socket = io(SOCKET_URL, {
-        // "polling" first ensures the HTTP handshake succeeds through
-        // Render's reverse-proxy, then upgrades to WebSocket automatically.
+        // "websocket" first for performance, fallback to polling
         transports: ["websocket", "polling"],
         reconnection: true,
-        reconnectionDelay: 1000,
-        reconnectionAttempts: 5,
+        // Faster reconnection: start at 500ms, max 3 seconds, with exponential backoff
+        reconnectionDelay: 500,
+        reconnectionDelayMax: 3000,
+        reconnectionAttempts: 10,
+        // Reduce initial connection timeout
+        timeout: 20000,
       });
 
       this.socket.on("connect", () => {
